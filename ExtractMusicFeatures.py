@@ -178,5 +178,5 @@ for song_data in songs_to_use:
             beat_features = calculate_features(indices, y)
             pd.DataFrame(beat_features).to_csv('training_data/{0}_beat_features.csv'.format(song_data[0]), index=False)
         except:
-            print ('Error loading song\n')
+            print ('Error loading {0}\n'.format(song_data[0]))
         gc.collect()

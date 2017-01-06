@@ -22,15 +22,15 @@ To retrain models start by running
 ```
 python FilterTrainingSongs.py
 python ExtractMusicFeatures.py
-python ExtractStepfileFeatures.py
+python ExtractStepfileFeatures.py --target_difficulty {difficulty}
 ```
-This will create a list of songs to train on from your downloaded packs and then generate some features from the music and stepfile for each (This takes a long time to run)
+This will create a list of songs to train on from your downloaded packs and then generate some features from the music and stepfile for each song within one difficulty of the target difficulty provided (This takes a long time to run)
 
 You can then run
 ```
 python TrainNoteClassModel.py
 ```
-or 
+or
 ```
 python TrainNoteModels.py
 ```

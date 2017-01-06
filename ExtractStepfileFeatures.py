@@ -1,3 +1,4 @@
+import argparse
 import pandas as pd
 import re
 from os import listdir
@@ -47,12 +48,28 @@ def padBar(bar):
     pad = int(48 / len(bar)) if len(bar) != 0 else 1
     return [row for note in bar for row in [note] + (pad - 1) * ['0000']]
 
-def get_plain_padded_notes_from_note_string(stepfile):
+def get_plain_padded_notes_from_note_string(stepfile, target_difficulty):
     notes_and_metadata = get_notes_and_metadata(stepfile)
-    notes_for_difficulty = min(notes_and_metadata.values(), key=lambda steps:abs(int(steps['DIFFICULTY']) - 10))['NOTES']
-    return [row for bar in notes_for_difficulty for row in padBar(bar)]
+    closest_difficulty = min(notes_and_metadata.values(), key=lambda steps:abs(int(steps['DIFFICULTY']) - target_difficulty))
+    if abs(int(closest_difficulty['DIFFICULTY']) - target_difficulty) > 1:
+        return None
+    return [row for bar in closest_difficulty['NOTES'] for row in padBar(bar)]
+
+
+parser = argparse.ArgumentParser(description='Extract Stepfile Features')
+parser.add_argument('--target_difficulty', type=int, required=True,
+                    help='diffulty to train model to predict')
+
+args = parser.parse_args()
+
 
 songs_to_use = pd.read_csv('training_data/songs_to_use.csv').values
 for song_data in songs_to_use:
-    notes = get_plain_padded_notes_from_note_string(song_data[2])
-    pd.DataFrame(notes).to_csv('training_data/{0}_notes.csv'.format(song_data[0]), index=False)
+    if '{0}_notes.csv'.format(song_data[0]) in listdir('training_data'):
+        print ('Stepfile Already Loaded')
+    else:
+        notes = get_plain_padded_notes_from_note_string(song_data[2], args.target_difficulty)
+        if notes:
+            pd.DataFrame(notes).to_csv('training_data/{0}_notes.csv'.format(song_data[0]), index=False)
+        else:
+            print ('No close difficulty for {0}\n'.format(song_data[0]))
