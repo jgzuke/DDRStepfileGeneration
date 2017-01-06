@@ -59,16 +59,23 @@ def get_plain_padded_notes_from_note_string(stepfile, target_difficulty):
 parser = argparse.ArgumentParser(description='Extract Stepfile Features')
 parser.add_argument('--target_difficulty', type=int, required=True,
                     help='diffulty to train model to predict')
+parser.add_argument('--difficulty_adjust', nargs='+', default=None,
+                    help='packs whose difficulty should be adjusted in the form pack~adjust with spaces replaces with underscores eg. Game_Grumps_Revolution~5')
 
 args = parser.parse_args()
 
+difficulty_adjust_map = {}
+if args.difficulty_adjust:
+    difficulty_adjust_map = dict((pack.split('~')[0].replace('_', ' '), int(pack.split('~')[1])) for pack in args.difficulty_adjust)
 
 songs_to_use = pd.read_csv('training_data/songs_to_use.csv').values
 for song_data in songs_to_use:
     if '{0}_notes.csv'.format(song_data[0]) in listdir('training_data'):
         print ('Stepfile Already Loaded')
     else:
-        notes = get_plain_padded_notes_from_note_string(song_data[2], args.target_difficulty)
+        pack, song = song_data[0].split('~')
+        difficulty_adjust = difficulty_adjust_map[pack] if pack in difficulty_adjust_map else 0
+        notes = get_plain_padded_notes_from_note_string(song_data[2], args.target_difficulty - difficulty_adjust)
         if notes:
             pd.DataFrame(notes).to_csv('training_data/{0}_notes.csv'.format(song_data[0]), index=False)
         else:

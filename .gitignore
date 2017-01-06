@@ -1,3 +1,5 @@
 /stepping_data/*
 /stepping_songs/*
 /training_data/*
+*.ipynb
+.ipynb_checkpoints/*

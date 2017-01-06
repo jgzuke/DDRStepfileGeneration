@@ -25,6 +25,7 @@ python ExtractMusicFeatures.py
 python ExtractStepfileFeatures.py --target_difficulty {difficulty}
 ```
 This will create a list of songs to train on from your downloaded packs and then generate some features from the music and stepfile for each song within one difficulty of the target difficulty provided (This takes a long time to run)
+`ExtractStepfileFeatures.py` can be run with `--difficulty_adjust {pack}~{adjust} {pack}~{adjust}...` if a pack is known to be stepped harder than usual eg `--difficulty_adjust Game_Grumps_Revolution~5 GREP~5`
 
 You can then run
 ```
