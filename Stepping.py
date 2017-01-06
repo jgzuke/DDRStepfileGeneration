@@ -245,6 +245,7 @@ def get_output(note_classes, note_models, hold_length_model, roll_length_model, 
     if class_cutoff_ammounts == None:
         class_cutoffs = default_class_cutoffs
     else:
+        class_cutoff_ammounts.insert(0, 0)
         class_cutoffs = [sorted(normalized_note_classes, key=itemgetter(i))[-max(int(num_samples * class_cutoff_ammounts[i]), 1)][i] for i in range(7)]
 
     note_classes = np.concatenate((([[1, 0, 0, 0, 0, 0, 0]] * song_padding), note_classes, ([[1, 0, 0, 0, 0, 0, 0]] * song_end_padding)), axis = 0)
@@ -428,8 +429,8 @@ parser.add_argument('--regenerate_note_classes', dest='regenerate_note_classes',
 parser.add_argument('--regenerate_notes', dest='regenerate_notes', action='store_const',
                     const=True, default=False,
                     help='Force the song to reload and generate new features from music file')
-parser.add_argument("--class_ammounts", nargs=7, type=float, default=None,
-                    help='Fraction of notes of each class to generate [empty, step, jump, hand, hold, roll, mine]')
+parser.add_argument("--class_ammounts", nargs=6, type=float, default=None,
+                    help='Fraction of notes of each class to generate [step, jump, hand, hold, roll, mine]')
 
 args = parser.parse_args()
 
