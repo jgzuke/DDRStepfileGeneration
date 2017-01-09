@@ -230,7 +230,7 @@ def get_closest_hold_length(length):
     return hold_lengths[np.argmax([-abs(length - aprox) for aprox in hold_lengths])]
 
 pattern = ['1000', '0100', '0001', '0010', '0100', '1000', '0001', '0010', '1000', '0100', '0001', '0010', '0100', '1000', '0001', '0010']
-default_class_cutoffs = [0, 2.3, 5.8, 3.5, 9.5, 7.0, 4.0]
+default_class_cutoff_ammounts = [0.14, 0.03, 0, 0.02, 0, 0]
 def get_output(note_classes, note_models, hold_length_model, roll_length_model, class_cutoff_ammounts):
     hold_lengths_current = [0, 0, 0, 0]
     roll_lengths_current = [0, 0, 0, 0]
@@ -243,10 +243,11 @@ def get_output(note_classes, note_models, hold_length_model, roll_length_model, 
 
     # get amt of each type of note
     if class_cutoff_ammounts == None:
-        class_cutoffs = default_class_cutoffs
-    else:
-        class_cutoff_ammounts.insert(0, 0)
-        class_cutoffs = [sorted(normalized_note_classes, key=itemgetter(i))[-max(int(num_samples * class_cutoff_ammounts[i]), 1)][i] for i in range(7)]
+        class_cutoff_ammounts = default_class_cutoff_ammounts
+
+    print (class_cutoff_ammounts)
+    class_cutoffs = [sorted(normalized_note_classes, key=itemgetter(i))[-max(int(num_samples * class_cutoff_ammounts[i - 1]), 1)][i] for i in range(1, 7)]
+    print (class_cutoffs)
 
     note_classes = np.concatenate((([[1, 0, 0, 0, 0, 0, 0]] * song_padding), note_classes, ([[1, 0, 0, 0, 0, 0, 0]] * song_end_padding)), axis = 0)
     dummy_rows = [row for eigth in pattern for row in [eigth] + ['0000'] * 5]
@@ -261,7 +262,7 @@ def get_output(note_classes, note_models, hold_length_model, roll_length_model, 
         targets = ['0', '1', '1', '1', '2', '4', 'M']
         ammounts = [0, 1, 2, 3, 1, 1, 1]
         for i in [1, 6, 2, 5, 4, 3]:
-            if normalized_note_class[i] > class_cutoffs[i]:
+            if normalized_note_class[i] > class_cutoffs[i - 1]:
                 holds = sum(length > 0 for length in hold_lengths_current) + sum(length > 0 for length in roll_lengths_current)
                 new_class = hold_class_redirect_array[i][holds]
                 if new_class == 0:

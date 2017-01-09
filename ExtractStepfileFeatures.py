@@ -73,10 +73,13 @@ for song_data in songs_to_use:
     if '{0}_notes.csv'.format(song_data[0]) in listdir('training_data'):
         print ('Stepfile Already Loaded')
     else:
-        pack, song = song_data[0].split('~')
-        difficulty_adjust = difficulty_adjust_map[pack] if pack in difficulty_adjust_map else 0
-        notes = get_plain_padded_notes_from_note_string(song_data[2], args.target_difficulty - difficulty_adjust)
-        if notes:
-            pd.DataFrame(notes).to_csv('training_data/{0}_notes.csv'.format(song_data[0]), index=False)
-        else:
-            print ('No close difficulty for {0}\n'.format(song_data[0]))
+        try:
+            pack, song = song_data[0].split('~')
+            difficulty_adjust = difficulty_adjust_map[pack] if pack in difficulty_adjust_map else 0
+            notes = get_plain_padded_notes_from_note_string(song_data[2], args.target_difficulty - difficulty_adjust)
+            if notes:
+                pd.DataFrame(notes).to_csv('training_data/{0}_notes.csv'.format(song_data[0]), index=False)
+            else:
+                print ('No close difficulty for {0}\n'.format(song_data[0]))
+        except:
+            print ('Error loading {0}\n'.format(song_data[0]))

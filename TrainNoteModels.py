@@ -129,7 +129,7 @@ def get_features_for_songs(songs):
     return X, y, np.array(hold_X), np.array(hold_y), np.array(roll_X), np.array(roll_y)
 
 songs = [SongFile(song_data[0]) for song_data in songs_to_use]
-X_array, y_array, hold_X, hold_y, roll_X, roll_y = get_features_for_songs(songs[:1]) # total 217
+X_array, y_array, hold_X, hold_y, roll_X, roll_y = get_features_for_songs(songs)
 
 # Hold length model
 model = Sequential()
@@ -189,6 +189,9 @@ max_depths = [7, 9, 3, 6, 5, 5]
 min_child_weights = [3, 3, 3, 3, 3, 3]
 num_estimators = [120, 120, 60, 50, 75, 90]
 for max_depth, min_child_weight, n_estimators, X, y, i in zip(max_depths, min_child_weights, num_estimators, X_array, y_class_array, range(6)):
+    if len(X) == 0:
+        print ('No examples of class to train on')
+        continue
     xgb_clf = XGBClassifier(max_depth=max_depth, min_child_weight=min_child_weight, learning_rate=0.1, n_estimators=n_estimators, subsample=0.70, colsample_bytree=0.70, objective="multi:softprob")
     xgb_clf.fit(X, y)
     print (xgb_clf.score(X, y))
