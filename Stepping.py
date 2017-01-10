@@ -245,9 +245,7 @@ def get_output(note_classes, note_models, hold_length_model, roll_length_model, 
     if class_cutoff_ammounts == None:
         class_cutoff_ammounts = default_class_cutoff_ammounts
 
-    print (class_cutoff_ammounts)
     class_cutoffs = [sorted(normalized_note_classes, key=itemgetter(i))[-max(int(num_samples * class_cutoff_ammounts[i - 1]), 1)][i] for i in range(1, 7)]
-    print (class_cutoffs)
 
     note_classes = np.concatenate((([[1, 0, 0, 0, 0, 0, 0]] * song_padding), note_classes, ([[1, 0, 0, 0, 0, 0, 0]] * song_end_padding)), axis = 0)
     dummy_rows = [row for eigth in pattern for row in [eigth] + ['0000'] * 5]
